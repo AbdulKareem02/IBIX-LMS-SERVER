@@ -8,6 +8,12 @@ app.use(express.json());
 
 const cors = require("cors");
 app.use(cors()); //hide this when code updating in git
+// const cors = require("cors");
+
+// app.use(cors({
+//   origin: "https://yourapp.vercel.app", // allow only your frontend
+//   credentials: true, // allow cookies
+// }));
 
 const port = process.env.PORT || 6000;
 

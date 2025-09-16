@@ -2,36 +2,54 @@ const studentModel = require("../models/users");
 
 exports.getStudentDetails = async (req, res) => {
   try {
-    const { employee } = req.query;
+    // 1️⃣ Fetch data from Google Sheets
+    const sheetResponse = await fetch(
+      "https://script.google.com/macros/s/AKfycbx7WKifEbirKQrcszG7sOZngNkofaqpAYMwMMM9J1fExsgP8TxVh5EYBXD4UhXhJA45/exec"
+    );
 
-    // Validate required query parameters
-    let validationErrors = [];
+    if (!sheetResponse.ok) {
+      throw new Error(`Google Sheets API error: ${sheetResponse.statusText}`);
+    }
 
-    if (!employee) validationErrors.push("Missing required field: employee");
+    const sheetData = await sheetResponse.json(); // Array of student objects
+    // 2️⃣ Get all existing studentIds from DB
+    const existingStudents = await studentModel
+      .find({}, { studentId: 1 })
+      .lean();
+    const existingIds = new Set(existingStudents.map((s) => s.studentId));
 
-    // Only return an error response if there are validation errors
-    if (validationErrors.length > 0) {
+    // 3️⃣ Filter only new students (skip existing ones)
+    const newStudents = sheetData.filter((s) => !existingIds.has(s.studentId));
+
+    // 4️⃣ Insert only new students
+    if (newStudents.length > 0) {
+      await studentModel.insertMany(newStudents, { ordered: false });
+      console.log(`${newStudents.length} new students added`);
+    } else {
+      console.log("No new students to add");
+    }
+
+    // 5️⃣ Validate request body
+    const { employee } = req.body;
+    if (!employee) {
       return res.status(400).json({
-        message: "Validation error with the following fields",
-        errors: validationErrors,
+        message: "Validation error: missing 'employee' field",
       });
     }
 
-    // Fetch questions based on employee and lang
-    const getStudents = await studentModel.find({ employee }).exec();
+    // 6️⃣ Return students filtered by employee
+    const filteredStudents = await studentModel.find({ employee }).exec();
 
-    // Flatten the data if it's nested
-    const flatData = [].concat(...getStudents);
-
-    // Send response
     res.status(200).json({
-      data: flatData,
+      message: "Student data synced successfully",
+      inserted: newStudents.length,
+      data: filteredStudents,
     });
   } catch (error) {
-    console.error("Error getting questions:", error.message);
+    console.error("Error syncing student data:", error);
     res.status(500).json({
-      message: "Failed to retrieve student details",
-      error: error.message, // Include specific error details
+      message: "Failed to sync student data",
+      error: error.message,
     });
   }
 };
