@@ -1,5 +1,6 @@
 const express = require("express");
 const { getStudentDetails } = require("../controllers/usersController");
+const { loginEmployee } = require("../controllers/employeesController");
 const route = express.Router();
 const Call = require("../models/users");
 const Remarks = require("../models/remarks");
@@ -136,5 +137,7 @@ route.post("/get-remarks", async (req, res) => {
 //     console.error("Login error:", error);
 //   }
 // });
+
+route.post("/employees/login", loginEmployee);
 
 module.exports = route;
