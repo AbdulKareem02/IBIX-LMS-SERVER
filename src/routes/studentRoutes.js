@@ -93,7 +93,6 @@ route.post("/remarks", async (req, res) => {
 route.post("/get-remarks", async (req, res) => {
   try {
     const { studentId } = req.body;
-    console.log(studentId);
     if (!studentId) {
       return res.status(400).json({ message: "studentId is required" });
     }

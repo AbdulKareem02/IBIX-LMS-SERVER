@@ -4,7 +4,7 @@ exports.getStudentDetails = async (req, res) => {
   try {
     // 1️⃣ Fetch data from Google Sheets
     const sheetResponse = await fetch(
-      "https://script.google.com/macros/s/AKfycbx7WKifEbirKQrcszG7sOZngNkofaqpAYMwMMM9J1fExsgP8TxVh5EYBXD4UhXhJA45/exec"
+      "https://script.google.com/macros/s/AKfycbyR-reuGHoqY423GXXU4raFan_yuicooaLI-4qAZA7O1Flq4J_Mn4ADqlV6mQ_pFBJt/exec"
     );
 
     if (!sheetResponse.ok) {
