@@ -4,7 +4,6 @@ const { loginEmployee } = require("../controllers/employeesController");
 const route = express.Router();
 const Call = require("../models/users");
 const Remarks = require("../models/remarks");
-const Row = require("../models/users");
 
 route.post("/get-students", getStudentDetails);
 
@@ -140,22 +139,39 @@ route.post("/get-remarks", async (req, res) => {
 
 route.post("/employees/login", loginEmployee);
 
+// Mongo model
+const Row = mongoose.model(
+  "Row",
+  new mongoose.Schema({
+    rowNumber: { type: Number, required: true },
+    sheetName: { type: String, required: true },
+    data: { type: [String], required: true },
+  })
+);
+
 // Webhook endpoint
-route.post("/sheets-webhook", async (req, res) => {
+app.post("/sheets-webhook", async (req, res) => {
   try {
     const { rowNumber, data, sheetName } = req.body;
 
-    console.log(data);
+    if (!rowNumber || !sheetName || !data) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-    // Upsert row into MongoDB
-    await Row.updateOne(
+    // ✅ Upsert = update if exists, insert if not
+    const result = await Row.updateOne(
       { rowNumber, sheetName },
-      { rowNumber, sheetName, data },
+      { $set: { data } },
       { upsert: true }
     );
 
-    res.status(200).json({ message: "Row synced successfully" });
+    res.status(200).json({
+      message: "Row synced successfully",
+      modifiedCount: result.modifiedCount,
+      upsertedId: result.upsertedId || null,
+    });
   } catch (err) {
+    console.error("Webhook error:", err);
     res.status(500).json({ error: err.message });
   }
 });
