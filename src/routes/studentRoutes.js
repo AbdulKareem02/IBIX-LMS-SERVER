@@ -145,6 +145,8 @@ route.post("/sheets-webhook", async (req, res) => {
   try {
     const { rowNumber, data, sheetName } = req.body;
 
+    console.log(data);
+
     // Upsert row into MongoDB
     await Row.updateOne(
       { rowNumber, sheetName },

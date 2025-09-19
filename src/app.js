@@ -45,8 +45,6 @@ app.use("/ibix-api/attendance/", attendanceRoutes);
 // Built-in body parser
 app.use(express.urlencoded({ extended: true }));
 
-app.listen(5000, () => console.log("Webhook listening on port 5000"));
-
 try {
   app.listen(port, () => {
     console.log(`Server running at port ${port}`);
