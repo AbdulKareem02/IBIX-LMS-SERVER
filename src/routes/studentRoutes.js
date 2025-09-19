@@ -1,4 +1,6 @@
 const express = require("express");
+const mongoose = require("mongoose");
+
 const { getStudentDetails } = require("../controllers/usersController");
 const { loginEmployee } = require("../controllers/employeesController");
 const route = express.Router();
@@ -139,29 +141,34 @@ route.post("/get-remarks", async (req, res) => {
 
 route.post("/employees/login", loginEmployee);
 
-// Mongo model
-const Row = mongoose.model(
-  "Row",
-  new mongoose.Schema({
-    rowNumber: { type: Number, required: true },
-    sheetName: { type: String, required: true },
-    data: { type: [String], required: true },
-  })
-);
-
-// Webhook endpoint
-app.post("/sheets-webhook", async (req, res) => {
+route.post("/sheets-webhook", async (req, res) => {
   try {
     const { rowNumber, data, sheetName } = req.body;
 
-    if (!rowNumber || !sheetName || !data) {
+    if (!rowNumber || !data || !sheetName) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // ✅ Upsert = update if exists, insert if not
-    const result = await Row.updateOne(
-      { rowNumber, sheetName },
-      { $set: { data } },
+    // Map data array into your schema fields
+    const [key, employee, studentId, name, phone, status] = data;
+
+    if (!studentId) {
+      return res.status(400).json({ error: "studentId is required" });
+    }
+
+    // Prepare object
+    const mappedFields = {
+      employee,
+      studentId,
+      name,
+      phone,
+      status: status || "Yet to Contact",
+    };
+
+    // Upsert into DB
+    const result = await Student.updateOne(
+      { studentId }, // match unique field
+      { $set: mappedFields },
       { upsert: true }
     );
 
