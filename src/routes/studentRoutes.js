@@ -9,6 +9,16 @@ const Remarks = require("../models/remarks");
 
 route.post("/get-students", getStudentDetails);
 
+route.post("/update-students", async (req, res) => {
+  try {
+    const newLead = await Call.create(req.body); // insert JSON directly
+    res.status(201).json(newLead);
+  } catch (err) {
+    console.error("Error inserting lead:", err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // Sync route for Google Sheets
 // route.post("/sync", async (req, res) => {
 //   const { action, row } = req.body;
