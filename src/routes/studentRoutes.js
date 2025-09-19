@@ -4,6 +4,7 @@ const { loginEmployee } = require("../controllers/employeesController");
 const route = express.Router();
 const Call = require("../models/users");
 const Remarks = require("../models/remarks");
+const Row = require("../models/users");
 
 route.post("/get-students", getStudentDetails);
 
@@ -138,5 +139,23 @@ route.post("/get-remarks", async (req, res) => {
 // });
 
 route.post("/employees/login", loginEmployee);
+
+// Webhook endpoint
+route.post("/sheets-webhook", async (req, res) => {
+  try {
+    const { rowNumber, data, sheetName } = req.body;
+
+    // Upsert row into MongoDB
+    await Row.updateOne(
+      { rowNumber, sheetName },
+      { rowNumber, sheetName, data },
+      { upsert: true }
+    );
+
+    res.status(200).json({ message: "Row synced successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = route;

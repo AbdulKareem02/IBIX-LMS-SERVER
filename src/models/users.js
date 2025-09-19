@@ -5,10 +5,7 @@ const leadSchema = new mongoose.Schema({
   studentId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   phone: { type: Number, required: true },
-  status: { type: String, default: "initial" },
-  course: { type: String },
-  email: { type: String },
-  location: { type: String },
+  status: { type: String, default: "Yet to Contact" },
 });
 
 module.exports = mongoose.model("Student", leadSchema);

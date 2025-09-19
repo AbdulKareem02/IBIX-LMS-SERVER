@@ -7,7 +7,9 @@ const app = express();
 app.use(express.json());
 
 const cors = require("cors");
-// app.use(cors()); //hide this when code updating in git
+
+//hide this when code updating in git
+// app.use(cors());
 
 const allowedOrigins = "https://ibixqt-lms.vercel.app/";
 
@@ -39,6 +41,11 @@ const attendanceRoutes = require("./routes/attendance");
 // routes
 app.use("/ibix-api/", studentRoutes);
 app.use("/ibix-api/attendance/", attendanceRoutes);
+
+// Built-in body parser
+app.use(express.urlencoded({ extended: true }));
+
+app.listen(5000, () => console.log("Webhook listening on port 5000"));
 
 try {
   app.listen(port, () => {
