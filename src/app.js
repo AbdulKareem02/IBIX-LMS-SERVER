@@ -2,6 +2,8 @@ require("dotenv").config({
   path: require("path").resolve(__dirname, "../.env"),
 });
 
+// require("./cron");
+
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -37,10 +39,12 @@ connectDB(process.env.MONGO_URI);
 
 const studentRoutes = require("./routes/studentRoutes");
 const attendanceRoutes = require("./routes/attendance");
+const empAttendanceRoutes = require("./routes/empAttendance");
 
 // routes
 app.use("/ibix-api/", studentRoutes);
 app.use("/ibix-api/attendance/", attendanceRoutes);
+app.use("/ibix-api/emp-attendance", empAttendanceRoutes);
 
 // Built-in body parser
 app.use(express.urlencoded({ extended: true }));

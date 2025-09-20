@@ -6,8 +6,9 @@ const { loginEmployee } = require("../controllers/employeesController");
 const route = express.Router();
 const Call = require("../models/users");
 const Remarks = require("../models/remarks");
+const verifyJWTAccess = require("../middleware/verifyJWTAccess");
 
-route.post("/get-students", getStudentDetails);
+route.post("/get-students", verifyJWTAccess, getStudentDetails);
 
 route.post("/update-students", async (req, res) => {
   try {

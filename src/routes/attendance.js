@@ -4,7 +4,6 @@ const router = express.Router();
 
 // Clock In
 router.post("/clock-in", async (req, res) => {
-  console.log("clocl in called");
   try {
     const { name, mail, clockIn } = req.body;
     const date = new Date(clockIn).toISOString().split("T")[0];
