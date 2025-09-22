@@ -20,32 +20,8 @@ route.post("/update-students", async (req, res) => {
   }
 });
 
-// Sync route for Google Sheets
-// route.post("/sync", async (req, res) => {
-//   const { action, row } = req.body;
-//   console.log(action, row);
-//   try {
-//     if (action === "update") {
-//       // Insert or update by studentId
-//       await getStudentDetails.updateOne(
-//         { studentId: row.studentId },
-//         { $set: row },
-//         { upsert: true }
-//       );
-//     } else if (action === "delete") {
-//       // Delete by studentId
-//       await getStudentDetails.deleteOne({ studentId: row.studentId });
-//     }
-
-//     res.json({ success: true });
-//   } catch (err) {
-//     console.error("Sync error:", err);
-//     res.status(500).json({ success: false, error: err.message });
-//   }
-// });
-
 // Update call status
-route.put("/calls/update/:studentId", async (req, res) => {
+route.put("/calls/update/:studentId", verifyJWTAccess, async (req, res) => {
   try {
     const { studentId } = req.params;
     const { status, remark } = req.body;
@@ -103,7 +79,7 @@ route.post("/remarks", async (req, res) => {
   }
 });
 
-route.post("/get-remarks", async (req, res) => {
+route.post("/get-remarks", verifyJWTAccess, async (req, res) => {
   try {
     const { studentId } = req.body;
     if (!studentId) {
@@ -123,32 +99,6 @@ route.post("/get-remarks", async (req, res) => {
     });
   }
 });
-
-// route.post("/login", async (req, res) => {
-//   const { formData } = req.body;
-
-//   try {
-//     const users = {
-//       "kareem@ibix.in": "kareem161412@",
-//       "shaikjelani@ibix.in": "123456789",
-//       "rajkumar@ibix.in": "123456789",
-//       "shaiksonu@ibix.in": "123456789",
-//       "anushka@ibix.in": "123456789",
-//       "shaikfariyad@ibix.in": "123456789",
-//     };
-
-//     if (
-//       users[formData.email] !== undefined &&
-//       users[formData.email] === formData.password
-//     ) {
-//       res.status(200).message("login successful");
-//     } else {
-//       res.status(404).message("email and password not found");
-//     }
-//   } catch (error) {
-//     console.error("Login error:", error);
-//   }
-// });
 
 route.post("/employees/login", loginEmployee);
 

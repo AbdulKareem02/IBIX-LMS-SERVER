@@ -26,9 +26,7 @@ exports.loginEmployee = async (req, res) => {
     res.json({
       message: "Login successful",
       token,
-      mail: employee.email,
-      name: employee.name,
-      designation: employee.designation,
+      employee,
     });
   } catch (err) {
     console.error(err);

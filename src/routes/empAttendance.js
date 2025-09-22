@@ -2,6 +2,7 @@
 const express = require("express");
 const route = express.Router();
 const Attendance = require("../models/EmpAttendance");
+const Leaves = require("../models/ApplyLeave");
 const verifyJWTAccess = require("../middleware/verifyJWTAccess");
 /**
  * Helper: format a Date to YYYY-MM-DD in server local timezone
@@ -206,6 +207,63 @@ route.get("/calendar/:employeeId", async (req, res) => {
   } catch (error) {
     console.error("calendar error:", error);
     res.status(500).json({ message: error.message });
+  }
+});
+
+route.post("/apply-leave", async (req, res) => {
+  try {
+    const {
+      employeeName,
+      employeeId,
+      leaveType,
+      startDate,
+      endDate,
+      reason,
+      contactInfo,
+      status,
+    } = req.body;
+
+    const result = await Leaves.insertOne({
+      employeeName,
+      employeeId,
+      leaveType,
+      startDate,
+      endDate,
+      contactInfo,
+      reason,
+      status,
+      createdAt: new Date(), // optional timestamp
+    });
+
+    res.status(201).json({
+      message: "Leave application submitted successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error while applying leave:", error);
+    res.status(400).json({ error: "Something went wrong" });
+  }
+});
+
+route.get("/leaves/:mail", async (req, res) => {
+  try {
+    const { mail } = req.params;
+
+    const leaves = await Leaves.find({ mail });
+
+    if (!leaves || leaves.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No leaves found for this email" });
+    }
+
+    res.status(200).json({
+      message: "Leaves fetched successfully",
+      data: leaves,
+    });
+  } catch (error) {
+    console.error("Error while fetching leaves:", error);
+    res.status(400).json({ error: "Something went wrong" });
   }
 });
 
