@@ -11,9 +11,9 @@ app.use(express.json());
 const cors = require("cors");
 
 //hide this when code updating in git
-// app.use(cors());
+app.use(cors());
 
-const allowedOrigins = "https://ibixqt-lms.vercel.app/";
+const allowedOrigins = "https://ibra.ibixqt.in/";
 
 // comment for this development only
 app.use(
